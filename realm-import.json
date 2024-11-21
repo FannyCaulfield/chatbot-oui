@@ -1,0 +1,80 @@
+{
+    "realm": "my-local-realm",
+    "enabled": true,
+    "sslRequired": "external",
+    "registrationAllowed": false,
+    "clients": [
+        {
+            "clientId": "my-local-app",
+            "rootUrl": "http://localhost:3000",
+            "baseUrl": "http://localhost:3000",
+            "enabled": true,
+            "clientAuthenticatorType": "client-secret",
+            "secret": "votre-client-secret-ici",
+            "redirectUris": [
+              "http://localhost:3000/auth/callback",
+              "http://localhost:3000/fr/auth/callback",
+              "http://localhost:54321/auth/v1/callback"
+            ],
+            "webOrigins": [
+              "http://localhost:3000",
+              "http://localhost:54321"
+            ],
+            "standardFlowEnabled": true,
+            "implicitFlowEnabled": false,
+            "directAccessGrantsEnabled": true,
+            "serviceAccountsEnabled": false,
+            "publicClient": false,
+            "protocol": "openid-connect",
+            "attributes": {
+              "pkce.code.challenge.method": "S256",
+              "backchannel.logout.session.required": "true",
+              "backchannel.logout.revoke.offline.tokens": "false",
+              "oauth2.device.authorization.grant.enabled": "false",
+              "oidc.ciba.grant.enabled": "false"
+            },
+            "defaultClientScopes": [
+              "web-origins",
+              "openid",
+              "profile",
+              "email",
+              "roles"
+            ]
+          }
+    ],
+    "users": [
+      {
+        "username": "test-user",
+        "enabled": true,
+        "emailVerified": true,
+        "credentials": [
+          {
+            "type": "password",
+            "value": "test-password",
+            "temporary": false
+          }
+        ],
+        "realmRoles": ["default-roles-my-local-realm", "user"]
+      }
+    ],
+    "roles": {
+      "realm": [
+        {
+          "name": "user",
+          "description": "User role"
+        }
+      ]
+    },
+    "defaultRoles": [
+      "user"
+    ],
+    "browserFlow": "browser",
+    "browserSecurityHeaders": {
+      "xFrameOptions": "SAMEORIGIN",
+      "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+      "contentSecurityPolicyReportOnly": "",
+      "xContentTypeOptions": "nosniff",
+      "xRobotsTag": "none",
+      "xXSSProtection": "1; mode=block"
+    }
+}

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS tools (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
     -- REQUIRED RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
 
     -- OPTIONAL RELATIONSHIPS
     folder_id UUID REFERENCES folders(id) ON DELETE SET NULL,
@@ -36,8 +36,8 @@ ALTER TABLE tools ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own tools"
     ON tools
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 CREATE POLICY "Allow view access to non-private tools"
     ON tools
@@ -57,7 +57,7 @@ EXECUTE PROCEDURE update_updated_at_column();
 
 CREATE TABLE IF NOT EXISTS tool_workspaces (
     -- REQUIRED RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
     tool_id UUID NOT NULL REFERENCES tools(id) ON DELETE CASCADE,
     workspace_id UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
 
@@ -80,8 +80,8 @@ ALTER TABLE tool_workspaces ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own tool_workspaces"
     ON tool_workspaces
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 -- TRIGGERS --
 

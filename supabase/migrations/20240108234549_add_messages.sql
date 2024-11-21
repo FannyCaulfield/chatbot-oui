@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS messages (
 
     -- RELATIONSHIPS
     chat_id UUID NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
 
     -- METADATA
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -35,8 +35,8 @@ ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own messages"
     ON messages
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 CREATE POLICY "Allow view access to messages for non-private chats"
     ON messages
@@ -125,15 +125,15 @@ CREATE POLICY "Allow read access to own message images"
 
 CREATE POLICY "Allow insert access to own message images"
     ON storage.objects FOR INSERT
-    WITH CHECK (bucket_id = 'message_images' AND (storage.foldername(name))[1] = auth.uid()::text);
+    WITH CHECK (bucket_id = 'message_images' AND (storage.foldername(name))[1] = next_auth.uid()::text);
 
 CREATE POLICY "Allow update access to own message images"
     ON storage.objects FOR UPDATE
-    USING (bucket_id = 'message_images' AND (storage.foldername(name))[1] = auth.uid()::text);
+    USING (bucket_id = 'message_images' AND (storage.foldername(name))[1] = next_auth.uid()::text);
 
 CREATE POLICY "Allow delete access to own message images"
     ON storage.objects FOR DELETE
-    USING (bucket_id = 'message_images' AND (storage.foldername(name))[1] = auth.uid()::text);
+    USING (bucket_id = 'message_images' AND (storage.foldername(name))[1] = next_auth.uid()::text);
 
 --------------- MESSAGE FILE ITEMS ---------------
 
@@ -141,7 +141,7 @@ CREATE POLICY "Allow delete access to own message images"
 
 CREATE TABLE IF NOT EXISTS message_file_items (
     -- REQUIRED RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
     message_id UUID NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
     file_item_id UUID NOT NULL REFERENCES file_items(id) ON DELETE CASCADE,
 
@@ -162,8 +162,8 @@ ALTER TABLE message_file_items ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own message_file_items"
     ON message_file_items
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 -- TRIGGERS --
 

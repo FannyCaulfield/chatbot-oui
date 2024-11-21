@@ -9,9 +9,10 @@ export const getProfileByUserId = async (userId: string) => {
     .single()
 
   if (!profile) {
+    console.log("ERROR")
     throw new Error(error.message)
   }
-
+  console.log(profile)
   return profile
 }
 

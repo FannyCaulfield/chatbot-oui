@@ -6,7 +6,7 @@ create table file_items (
 
   -- RELATIONSHIPS
   file_id UUID NOT NULL REFERENCES files(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
 
   -- METADATA
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -38,8 +38,8 @@ ALTER TABLE file_items ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own file items"
     ON file_items
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 CREATE POLICY "Allow view access to non-private file items"
     ON file_items

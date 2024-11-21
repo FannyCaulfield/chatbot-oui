@@ -9,6 +9,8 @@ import { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import { cookies } from "next/headers"
 import { ReactNode } from "react"
+import { NextAuthProvider } from "@/components/utility/session-provider"
+
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -87,20 +89,22 @@ export default async function RootLayout({
   const { t, resources } = await initTranslations(locale, i18nNamespaces)
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className={inter.className}>
-        <Providers attribute="class" defaultTheme="dark">
-          <TranslationsProvider
-            namespaces={i18nNamespaces}
-            locale={locale}
-            resources={resources}
-          >
-            <Toaster richColors position="top-center" duration={3000} />
-            <div className="bg-background text-foreground flex h-dvh flex-col items-center overflow-x-auto">
-              {session ? <GlobalState>{children}</GlobalState> : children}
-            </div>
-          </TranslationsProvider>
-        </Providers>
+        <NextAuthProvider>
+          <Providers attribute="class" defaultTheme="dark">
+            <TranslationsProvider
+              namespaces={i18nNamespaces}
+              locale={locale}
+              resources={resources}
+            >
+              <Toaster richColors position="top-center" duration={3000} />
+              <div className="bg-background text-foreground flex h-dvh flex-col items-center overflow-x-auto">
+                {session ? <GlobalState>{children}</GlobalState> : children}
+              </div>
+            </TranslationsProvider>
+          </Providers>
+        </NextAuthProvider>
       </body>
     </html>
   )

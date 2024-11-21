@@ -61,12 +61,12 @@ CREATE POLICY "Allow public read access on non-private workspace images"
 
 CREATE POLICY "Allow insert access to own workspace images"
     ON storage.objects FOR INSERT TO authenticated
-    WITH CHECK (bucket_id = 'workspace_images' AND (storage.foldername(name))[1] = auth.uid()::text);
+    WITH CHECK (bucket_id = 'workspace_images' AND (storage.foldername(name))[1] = next_auth.uid()::text);
 
 CREATE POLICY "Allow update access to own workspace images"
     ON storage.objects FOR UPDATE TO authenticated
-    USING (bucket_id = 'workspace_images' AND (storage.foldername(name))[1] = auth.uid()::text);
+    USING (bucket_id = 'workspace_images' AND (storage.foldername(name))[1] = next_auth.uid()::text);
 
 CREATE POLICY "Allow delete access to own workspace images"
     ON storage.objects FOR DELETE TO authenticated
-    USING (bucket_id = 'workspace_images' AND (storage.foldername(name))[1] = auth.uid()::text);
+    USING (bucket_id = 'workspace_images' AND (storage.foldername(name))[1] = next_auth.uid()::text);

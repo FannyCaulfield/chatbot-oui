@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS files (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
     -- REQUIRED RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
 
     -- OPTIONAL RELATIONSHIPS
     folder_id UUID REFERENCES folders(id) ON DELETE SET NULL,
@@ -38,8 +38,8 @@ ALTER TABLE files ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own files"
     ON files
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 CREATE POLICY "Allow view access to non-private files"
     ON files
@@ -107,15 +107,15 @@ CREATE POLICY "Allow public read access on non-private files"
 
 CREATE POLICY "Allow authenticated insert access to own file"
     ON storage.objects FOR INSERT TO authenticated
-    WITH CHECK (bucket_id = 'files' AND (storage.foldername(name))[1] = auth.uid()::text);
+    WITH CHECK (bucket_id = 'files' AND (storage.foldername(name))[1] = next_auth.uid()::text);
 
 CREATE POLICY "Allow authenticated update access to own file"
     ON storage.objects FOR UPDATE TO authenticated
-    USING (bucket_id = 'files' AND (storage.foldername(name))[1] = auth.uid()::text);
+    USING (bucket_id = 'files' AND (storage.foldername(name))[1] = next_auth.uid()::text);
 
 CREATE POLICY "Allow authenticated delete access to own file"
     ON storage.objects FOR DELETE TO authenticated
-    USING (bucket_id = 'files' AND (storage.foldername(name))[1] = auth.uid()::text);
+    USING (bucket_id = 'files' AND (storage.foldername(name))[1] = next_auth.uid()::text);
 
 --------------- FILE WORKSPACES ---------------
 
@@ -123,7 +123,7 @@ CREATE POLICY "Allow authenticated delete access to own file"
 
 CREATE TABLE IF NOT EXISTS file_workspaces (
     -- REQUIRED RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
     file_id UUID NOT NULL REFERENCES files(id) ON DELETE CASCADE,
     workspace_id UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
 
@@ -146,8 +146,8 @@ ALTER TABLE file_workspaces ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own file_workspaces"
     ON file_workspaces
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 -- TRIGGERS --
 

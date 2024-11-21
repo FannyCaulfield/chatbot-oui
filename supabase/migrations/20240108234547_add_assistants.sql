@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS assistants (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
     -- REQUIRED RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
 
     -- OPTIONAL RELATIONSHIPS
     folder_id UUID REFERENCES folders(id) ON DELETE SET NULL,
@@ -42,8 +42,8 @@ ALTER TABLE assistants ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own assistants"
     ON assistants
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 CREATE POLICY "Allow view access to non-private assistants"
     ON assistants
@@ -111,15 +111,15 @@ CREATE POLICY "Allow public read access on non-private assistant images"
 
 CREATE POLICY "Allow insert access to own assistant images"
     ON storage.objects FOR INSERT TO authenticated
-    WITH CHECK (bucket_id = 'assistant_images' AND (storage.foldername(name))[1] = auth.uid()::text);
+    WITH CHECK (bucket_id = 'assistant_images' AND (storage.foldername(name))[1] = next_auth.uid()::text);
 
 CREATE POLICY "Allow update access to own assistant images"
     ON storage.objects FOR UPDATE TO authenticated
-    USING (bucket_id = 'assistant_images' AND (storage.foldername(name))[1] = auth.uid()::text);
+    USING (bucket_id = 'assistant_images' AND (storage.foldername(name))[1] = next_auth.uid()::text);
 
 CREATE POLICY "Allow delete access to own assistant images"
     ON storage.objects FOR DELETE TO authenticated
-    USING (bucket_id = 'assistant_images' AND (storage.foldername(name))[1] = auth.uid()::text);
+    USING (bucket_id = 'assistant_images' AND (storage.foldername(name))[1] = next_auth.uid()::text);
 
 --------------- ASSISTANT WORKSPACES ---------------
 
@@ -127,7 +127,7 @@ CREATE POLICY "Allow delete access to own assistant images"
 
 CREATE TABLE IF NOT EXISTS assistant_workspaces (
     -- REQUIRED RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
     assistant_id UUID NOT NULL REFERENCES assistants(id) ON DELETE CASCADE,
     workspace_id UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
 
@@ -150,8 +150,8 @@ ALTER TABLE assistant_workspaces ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own assistant_workspaces"
     ON assistant_workspaces
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 -- TRIGGERS --
 

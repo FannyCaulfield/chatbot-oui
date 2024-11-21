@@ -9,6 +9,8 @@ import { get } from "@vercel/edge-config"
 import { Metadata } from "next"
 import { cookies, headers } from "next/headers"
 import { redirect } from "next/navigation"
+import { KeycloakButton } from "@/components/utility/keycloak-button"
+import { getServerSession } from "next-auth/next"
 
 export const metadata: Metadata = {
   title: "Login"
@@ -19,21 +21,22 @@ export default async function Login({
 }: {
   searchParams: { message: string }
 }) {
-  const cookieStore = cookies()
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        }
-      }
-    }
-  )
-  const session = (await supabase.auth.getSession()).data.session
+  const session = await getServerSession()
 
   if (session) {
+    const cookieStore = cookies()
+    const supabase = createServerClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          }
+        }
+      }
+    )
+
     const { data: homeWorkspace, error } = await supabase
       .from("workspaces")
       .select("*")
@@ -42,7 +45,8 @@ export default async function Login({
       .single()
 
     if (!homeWorkspace) {
-      throw new Error(error.message)
+      console.log("🏠 [Login] No home workspace found, redirecting to setup")
+      return redirect("/setup")
     }
 
     return redirect(`/${homeWorkspace.id}/chat`)
@@ -200,7 +204,20 @@ export default async function Login({
           Sign Up
         </SubmitButton>
 
-        <div className="text-muted-foreground mt-1 flex justify-center text-sm">
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <div className="border-foreground/20 w-full border-t"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-background text-muted-foreground px-2">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        <KeycloakButton />
+
+        <div className="text-muted-foreground mt-4 flex justify-center text-sm">
           <span className="mr-1">Forgot your password?</span>
           <button
             formAction={handleResetPassword}

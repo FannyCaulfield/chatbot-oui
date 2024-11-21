@@ -37,11 +37,74 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE SCHEMA next_auth;
+
+GRANT USAGE ON SCHEMA next_auth TO service_role;
+GRANT ALL ON SCHEMA next_auth TO postgres;
+
+-- Create NextAuth core tables
+CREATE TABLE IF NOT EXISTS next_auth.users (
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    instance_id uuid NOT NULL,
+    aud text NOT NULL,
+    role text NOT NULL,
+    email text,
+    encrypted_password text,
+    email_confirmed_at timestamp with time zone,
+    invited_at timestamp with time zone,
+    confirmation_token text,
+    confirmation_sent_at timestamp with time zone,
+    recovery_token text,
+    recovery_sent_at timestamp with time zone,
+    email_change_token_new text,
+    email_change text,
+    email_change_sent_at timestamp with time zone,
+    last_sign_in_at timestamp with time zone,
+    raw_app_meta_data jsonb,
+    raw_user_meta_data jsonb,
+    is_super_admin boolean,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    phone text,
+    phone_confirmed_at timestamp with time zone,
+    phone_change text,
+    phone_change_token text,
+    phone_change_sent_at timestamp with time zone,
+    email_change_token_current text,
+    email_change_confirm_status integer,
+    banned_until timestamp with time zone,
+    reauthentication_token text,
+    reauthentication_sent_at timestamp with time zone,
+    is_sso_user boolean,
+    name text,
+    "emailVerified" timestamp with time zone,
+    image text,
+    CONSTRAINT users_pkey PRIMARY KEY (id),
+    CONSTRAINT email_unique UNIQUE (email)
+);
+
+-- Grant permissions
+GRANT ALL ON ALL TABLES IN SCHEMA next_auth TO postgres;
+GRANT ALL ON ALL TABLES IN SCHEMA next_auth TO service_role;
+
+
+CREATE OR REPLACE FUNCTION next_auth.uid() 
+RETURNS uuid
+LANGUAGE sql 
+STABLE 
+AS $$
+  SELECT COALESCE(
+    (current_setting('request.jwt.claims', true)::jsonb->>'sub')::uuid,
+    NULL
+  );
+$$;
+
+
 -- Policy to allow users to read their own files
 CREATE POLICY "Allow users to read their own files"
 ON storage.objects FOR SELECT
 TO authenticated
-USING (auth.uid()::text = owner_id::text);
+USING (next_auth.uid()::text = owner_id::text);
 
 -- Function to delete a storage object
 CREATE OR REPLACE FUNCTION delete_storage_object(bucket TEXT, object TEXT, OUT status INT, OUT content TEXT)

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS workspaces (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
     -- RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
 
     -- METADATA
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -40,8 +40,8 @@ ALTER TABLE workspaces ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own workspaces"
     ON workspaces
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 CREATE POLICY "Allow view access to non-private workspaces"
     ON workspaces

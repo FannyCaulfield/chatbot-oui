@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS prompts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
     -- REQUIRED RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
 
     -- OPTIONAL RELATIONSHIPS
     folder_id UUID REFERENCES folders(id) ON DELETE SET NULL,
@@ -34,8 +34,8 @@ ALTER TABLE prompts ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own prompts"
     ON prompts
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 CREATE POLICY "Allow view access to non-private prompts"
     ON prompts
@@ -55,7 +55,7 @@ EXECUTE PROCEDURE update_updated_at_column();
 
 CREATE TABLE IF NOT EXISTS prompt_workspaces (
     -- REQUIRED RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
     prompt_id UUID NOT NULL REFERENCES prompts(id) ON DELETE CASCADE,
     workspace_id UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
 
@@ -78,8 +78,8 @@ ALTER TABLE prompt_workspaces ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own prompt_workspaces"
     ON prompt_workspaces
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 -- TRIGGERS --
 

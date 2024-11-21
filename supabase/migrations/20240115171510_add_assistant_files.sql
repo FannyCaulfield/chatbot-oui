@@ -4,7 +4,7 @@
 
 CREATE TABLE IF NOT EXISTS assistant_files (
     -- REQUIRED RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
     assistant_id UUID NOT NULL REFERENCES assistants(id) ON DELETE CASCADE,
     file_id UUID NOT NULL REFERENCES files(id) ON DELETE CASCADE,
 
@@ -27,8 +27,8 @@ ALTER TABLE assistant_files ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own assistant_files"
     ON assistant_files
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 -- TRIGGERS --
 
@@ -43,7 +43,7 @@ EXECUTE PROCEDURE update_updated_at_column();
 
 CREATE TABLE IF NOT EXISTS assistant_collections (
     -- REQUIRED RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
     assistant_id UUID NOT NULL REFERENCES assistants(id) ON DELETE CASCADE,
     collection_id UUID NOT NULL REFERENCES collections(id) ON DELETE CASCADE,
 
@@ -66,8 +66,8 @@ ALTER TABLE assistant_collections ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own assistant_collections"
     ON assistant_collections
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 -- TRIGGERS --
 

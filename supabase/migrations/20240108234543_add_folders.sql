@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS folders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
     -- RELATIONSHIPS
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES next_auth.users(id) ON DELETE CASCADE,
     workspace_id UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
 
     -- METADATA
@@ -31,8 +31,8 @@ ALTER TABLE folders ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow full access to own folders"
     ON folders
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = next_auth.uid())
+    WITH CHECK (user_id = next_auth.uid());
 
 -- TRIGGERS --
 
